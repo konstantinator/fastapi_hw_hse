@@ -56,7 +56,7 @@ def post():
 
 
 @app.get('/dog')
-def get_dogs(kind):
+def get_dogs(kind=None):
     if kind in kind_types:
         return [v for k, v in dogs_db.items() if v.kind==kind]
     elif kind is None:
@@ -66,23 +66,23 @@ def get_dogs(kind):
 
 @app.post('/dog')
 def post_dog(name, pk, kind):
-    if pk not in dogs_db.keys() and kind in kind_types and name:
-        dogs_db[pk] =  Dog(name=name, pk=pk, kind=DogType(kind))
+    if int(pk) not in dogs_db.keys() and kind in kind_types and name:
+        dogs_db[int(pk)] =  Dog(name=name, pk=pk, kind=DogType(kind))
         return dogs_db[pk]
     raise HTTPException(status_code=422, detail='Ошибка в данных')
 
 
 @app.get('/dog/{pk}')
 def get_dog_pk(pk):
-    if pk in dogs_db.keys():
-        return dogs_db[pk]
+    if int(pk) in dogs_db.keys():
+        return dogs_db[int(pk)]
     raise HTTPException(status_code=422, detail='Ошибка в данных')
     
 
 @app.patch('/dog/{pk}')
 def upd_dog(name, pk, kind):
-    if pk in dogs_db.keys() and kind in kind_types and name:
-        dogs_db[pk] = Dog(name=name, pk=pk, kind=DogType(kind))
-        return dogs_db[pk]
+    if int(pk) in dogs_db.keys() and kind in kind_types and name:
+        dogs_db[int(pk)] = Dog(name=name, pk=int(pk), kind=DogType(kind))
+        return dogs_db[int(pk)]
     raise HTTPException(status_code=422, detail='Ошибка в данных')
     
