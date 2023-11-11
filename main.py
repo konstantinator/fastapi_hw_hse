@@ -68,7 +68,7 @@ def get_dogs(kind=None):
 def post_dog(name, pk, kind):
     if int(pk) not in dogs_db.keys() and kind in kind_types and name:
         dogs_db[int(pk)] =  Dog(name=name, pk=pk, kind=DogType(kind))
-        return dogs_db[pk]
+        return dogs_db[ int(pk)]
     raise HTTPException(status_code=422, detail='Ошибка в данных')
 
 
