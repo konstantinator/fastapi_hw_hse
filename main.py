@@ -1,6 +1,8 @@
 from enum import Enum
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import time
+
 
 app = FastAPI()
 
@@ -32,16 +34,55 @@ dogs_db = {
     6: Dog(name='Uga', pk=6, kind='bulldog')
 }
 
+
 post_db = [
     Timestamp(id=0, timestamp=12),
     Timestamp(id=1, timestamp=10)
 ]
 
 
+kind_types = {'terrier', 'bulldog', 'dalmatian'}
+
+
 @app.get('/')
 def root():
-    # ваш код здесь
-    ...
+    return "UwU"
 
-# ваш код здесь
-...
+
+@app.post('/post')
+def post():
+    post_db.append(Timestamp(id=post_db[-1].id + 1, timestamp=int(time.time())))
+    return post_db[-1]
+
+
+@app.get('/dog')
+def get_dogs(kind):
+    if kind in kind_types:
+        return [v for k, v in dogs_db.items() if v.kind==kind]
+    elif kind is None:
+        return [v for k, v in dogs_db.items()]
+    raise HTTPException(status_code=422, detail='Ошибка в данных')
+
+
+@app.post('/dog')
+def post_dog(name, pk, kind):
+    if pk not in dogs_db.keys() and kind in kind_types and name:
+        dogs_db[pk] =  Dog(name=name, pk=pk, kind=DogType(kind))
+        return dogs_db[pk]
+    raise HTTPException(status_code=422, detail='Ошибка в данных')
+
+
+@app.get('/dog/{pk}')
+def get_dog_pk(pk):
+    if pk in dogs_db.keys():
+        return dogs_db[pk]
+    raise HTTPException(status_code=422, detail='Ошибка в данных')
+    
+
+@app.patch('/dog/{pk}')
+def upd_dog(name, pk, kind):
+    if pk in dogs_db.keys() and kind in kind_types and name:
+        dogs_db[pk] = Dog(name=name, pk=pk, kind=DogType(kind))
+        return dogs_db[pk]
+    raise HTTPException(status_code=422, detail='Ошибка в данных')
+    
