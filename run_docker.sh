@@ -1,0 +1,1 @@
+docker run -d --name my_web -p 5555:5555 web-service
